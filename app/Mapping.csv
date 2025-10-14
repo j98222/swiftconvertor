@@ -1,0 +1,72 @@
+/AppHdr/Fr/FIId/FinInstnId/BICFI, From BIC
+/AppHdr/To/FIId/FinInstnId/BICFI, To BIC
+/Document/FICdtTrf/GrpHdr/SttlmInf/SttlmMtd, Settlement Method
+/Document/FICdtTrf/CdtTrfTxInf/IntrBkSttlmAmt, Settlement Amount
+/Document/FICdtTrf/CdtTrfTxInf/IntrBkSttlmDt, Settlement Date
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt1/FinInstnId/BICFI, Intermediary Agent 1/BIC
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt1/FinInstnId/Nm, Intermediary Agent 1/Name
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt1/FinInstnId/PstlAdr/TwnNm, Intermediary Agent 1/Address/City
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt1/FinInstnId/PstlAdr/Dept,Intermediary Agent 1/Address/Department
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt1/FinInstnId/PstlAdr/StrtNm,Intermediary Agent 1/Address/Street Name
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt1/FinInstnId/PstlAdr/BldgNb,Intermediary Agent 1/Address/Building Number
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt1/FinInstnId/PstlAdr/PstCd,Intermediary Agent 1/Address/Province
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt1/FinInstnId/PstlAdr/CtrySubDvsn,Intermediary Agent 1/Address/City Sub Division
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt1/FinInstnId/PstlAdr/Ctry,Intermediary Agent 1/Address/Country
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt1Acct/Id/IBAN, Intermediary Agent 1/Account/IBAN
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt1Acct/Id/Othr/Id, Intermediary Agent 1/Account/Id
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt2/FinInstnId/BICFI,Intermediary Agent 2/BIC
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt2/FinInstnId/Nm,Intermediary Agent 2/Name
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt2/FinInstnId/PstlAdr/TwnNm,Intermediary Agent 2/Address/City
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt2/FinInstnId/PstlAdr/Dept,Intermediary Agent 2/Address/Department
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt2/FinInstnId/PstlAdr/StrtNm,Intermediary Agent 2/Address/Street Name
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt2/FinInstnId/PstlAdr/BldgNb,Intermediary Agent 2/Address/Building Number
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt2/FinInstnId/PstlAdr/PstCd,Intermediary Agent 2/Address/Province
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt2/FinInstnId/PstlAdr/CtrySubDvsn,Intermediary Agent 2/Address/City Sub Division
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt2/FinInstnId/PstlAdr/Ctry,Intermediary Agent 2/Address/Country
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt2Acct/Id/IBAN, Intermediary Agent 2/Account/IBAN
+/Document/FICdtTrf/CdtTrfTxInf/IntrmyAgt2Acct/Id/Othr/Id, Intermediary Agent 2/Account/Id
+/Document/FICdtTrf/CdtTrfTxInf/DbtrAgt/FinInstnId/BICFI, Debtor Agent/BIC
+/Document/FICdtTrf/CdtTrfTxInf/DbtrAgt/FinInstnId/Nm, Debtor Agent/Name
+/Document/FICdtTrf/CdtTrfTxInf/DbtrAgt/FinInstnId/PstlAdr/TwnNm, Debtor Agent/Address/City
+/Document/FICdtTrf/CdtTrfTxInf/DbtrAgt/FinInstnId/PstlAdr/Dept, Debtor Agent/Address/Department
+/Document/FICdtTrf/CdtTrfTxInf/DbtrAgt/FinInstnId/PstlAdr/StrtNm, Debtor Agent/Address/Street Name
+/Document/FICdtTrf/CdtTrfTxInf/DbtrAgt/FinInstnId/PstlAdr/BldgNb, Debtor Agent/Address/Building Number
+/Document/FICdtTrf/CdtTrfTxInf/DbtrAgt/FinInstnId/PstlAdr/PstCd, Debtor Agent/Address/Province
+/Document/FICdtTrf/CdtTrfTxInf/DbtrAgt/FinInstnId/PstlAdr/CtrySubDvsn, Debtor Agent/Address/City Sub Division
+/Document/FICdtTrf/CdtTrfTxInf/DbtrAgt/FinInstnId/PstlAdr/Ctry, Debtor Agent/Address/Country
+/Document/FICdtTrf/CdtTrfTxInf/DbtrAgtAcct/Id/IBAN, Debtor Agent/Account/IBAN
+/Document/FICdtTrf/CdtTrfTxInf/DbtrAgtAcct/Id/Othr/Id, Debtor Agent/Account/Id
+/Document/FICdtTrf/CdtTrfTxInf/Dbtr/FinInstnId/BICFI,Debtor/BIC
+/Document/FICdtTrf/CdtTrfTxInf/Dbtr/FinInstnId/Nm, Debtor/Name
+/Document/FICdtTrf/CdtTrfTxInf/Dbtr/FinInstnId/PstlAdr/TwnNm, Debtor/Address/City
+/Document/FICdtTrf/CdtTrfTxInf/Dbtr/FinInstnId/PstlAdr/Dept, Debtor/Address/Department
+/Document/FICdtTrf/CdtTrfTxInf/Dbtr/FinInstnId/PstlAdr/StrtNm, Debtor/Address/Street Name
+/Document/FICdtTrf/CdtTrfTxInf/Dbtr/FinInstnId/PstlAdr/BldgNb, Debtor/Address/Building Number
+/Document/FICdtTrf/CdtTrfTxInf/Dbtr/FinInstnId/PstlAdr/PstCd, Debtor/Address/Province
+/Document/FICdtTrf/CdtTrfTxInf/Dbtr/FinInstnId/PstlAdr/CtrySubDvsn, Debtor/Address/City Sub Division
+/Document/FICdtTrf/CdtTrfTxInf/Dbtr/FinInstnId/PstlAdr/Ctry, Debtor/Address/Country
+/Document/FICdtTrf/CdtTrfTxInf/DbtrAcct/Id/IBAN, Debtor/Account/IBAN
+/Document/FICdtTrf/CdtTrfTxInf/DbtrAcct/Id/Othr/Id, Debtor/Account/Id
+/Document/FICdtTrf/CdtTrfTxInf/CdtrAgt/FinInstnId/BICFI, Creditor Agent/BIC
+/Document/FICdtTrf/CdtTrfTxInf/CdtrAgt/FinInstnId/Nm, Creditor Agent/Name
+/Document/FICdtTrf/CdtTrfTxInf/CdtrAgt/FinInstnId/PstlAdr/TwnNm, Creditor Agent/Address/City
+/Document/FICdtTrf/CdtTrfTxInf/CdtrAgt/FinInstnId/PstlAdr/Dept, Creditor Agent/Address/Department
+/Document/FICdtTrf/CdtTrfTxInf/CdtrAgt/FinInstnId/PstlAdr/StrtNm, Creditor Agent/Address/Street Name
+/Document/FICdtTrf/CdtTrfTxInf/CdtrAgt/FinInstnId/PstlAdr/BldgNb, Creditor Agent/Address/Building Number
+/Document/FICdtTrf/CdtTrfTxInf/CdtrAgt/FinInstnId/PstlAdr/PstCd, Creditor Agent/Address/Province
+/Document/FICdtTrf/CdtTrfTxInf/CdtrAgt/FinInstnId/PstlAdr/CtrySubDvsn, Creditor Agent/Address/City Sub Division
+/Document/FICdtTrf/CdtTrfTxInf/CdtrAgt/FinInstnId/PstlAdr/Ctry, Creditor Agent/Address/Country
+/Document/FICdtTrf/CdtTrfTxInf/CdtrAgtAcct/Id/IBAN, Creditor Agent/Account/IBAN
+/Document/FICdtTrf/CdtTrfTxInf/CdtrAgtAcct/Id/Othr/Id, Creditor Agent/Account/Id
+/Document/FICdtTrf/CdtTrfTxInf/Cdtr/FinInstnId/BICFI,Creditor/BIC
+/Document/FICdtTrf/CdtTrfTxInf/Cdtr/FinInstnId/Nm,Creditor/Name
+/Document/FICdtTrf/CdtTrfTxInf/Cdtr/FinInstnId/PstlAdr/TwnNm,Creditor/Address/City
+/Document/FICdtTrf/CdtTrfTxInf/Cdtr/FinInstnId/PstlAdr/Dept,Creditor/Address/Department
+/Document/FICdtTrf/CdtTrfTxInf/Cdtr/FinInstnId/PstlAdr/StrtNm,Creditor/Address/Street Name
+/Document/FICdtTrf/CdtTrfTxInf/Cdtr/FinInstnId/PstlAdr/BldgNb,Creditor/Address/Building Number
+/Document/FICdtTrf/CdtTrfTxInf/Cdtr/FinInstnId/PstlAdr/PstCd,Creditor/Address/Province
+/Document/FICdtTrf/CdtTrfTxInf/Cdtr/FinInstnId/PstlAdr/CtrySubDvsn,Creditor/Address/City Sub Division
+/Document/FICdtTrf/CdtTrfTxInf/Cdtr/FinInstnId/PstlAdr/Ctry,Creditor/Address/Country
+/Document/FICdtTrf/CdtTrfTxInf/CdtrAcct/Id/IBAN,Creditor/Account/IBAN
+/Document/FICdtTrf/CdtTrfTxInf/CdtrAcct/Id/Othr/Id,Creditor/Account/Id
+/Document/FICdtTrf/CdtTrfTxInf/RmtInf/Ustrd, Remittance Information

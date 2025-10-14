@@ -1,0 +1,4 @@
+﻿.node_modules
+node_modules
+*.log
+app/test-data/response.xml
