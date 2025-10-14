@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm: install",
+      "type": "shell",
+      "command": "npm install",
+      "group": "build",
+      "presentation": { "reveal": "always" },
+      "problemMatcher": []
+    },
+    {
+      "label": "npm: start",
+      "type": "shell",
+      "command": "npm start",
+      "isBackground": true,
+      "presentation": { "reveal": "always" },
+      "problemMatcher": []
+    },
+    {
+      "label": "npm: dev",
+      "type": "shell",
+      "command": "npm run dev",
+      "isBackground": true,
+      "presentation": { "reveal": "always" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Docker: build image",
+      "type": "shell",
+      "command": "docker build -t swiftconvertor:dev .",
+      "presentation": { "reveal": "always" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Docker Compose: up",
+      "type": "shell",
+      "command": "docker compose up --build",
+      "presentation": { "reveal": "always" },
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "paymentType": "009",
+  "settlementMethod": "INDA", 
+  "amount": "1000.50",
+  "settlementDate": "2025-10-20",
+  "fromBIC": "DEUTDEFF",
+  "toBIC": "BOFAUS3N",
+  "remittanceInfo": "Invoice 2025-12345",
+  "messageIdentifier": "MSG-20251012-0001",
+  "requestType": "PAYMENT",
+
+  "intermediaryAgent1": {
+    "bic": "NEDSZAJJ",
+    "name": "Nedbank Intermediary",
+    "address": {
+      "department": "Intermediary Dept",
+      "buildingNumber": "10",
+      "streetName": "Oak Street",
+      "city": "Johannesburg",
+      "citySubDivision": "Sandton",
+      "province": "Gauteng",
+      "country": "ZA",
+      "postcode": "2196"
+    },
+    "account": {
+      "iban": "NL91ABNA0417164300",
+      "id": "INT1-ACC-001"
+    }
+  },
+
+  "intermediaryAgent2": {
+    "bic": "RBOSGB2L",
+    "name": "RBS Intermediary",
+    "address": {
+      "department": "Intermediary Dept 2",
+      "buildingNumber": "5",
+      "streetName": "Fleet Street",
+      "city": "London",
+      "citySubDivision": "",
+      "province": "",
+      "country": "GB",
+      "postcode": "EC4A 2WR"
+    },
+    "account": {
+      "iban": "GB82WEST12345698765432",
+      "id": "INT2-ACC-001"
+    }
+  },
+
+  "debtorAgent": {
+    "bic": "CHASUS33",
+    "name": "JPM Debtor Agent",
+    "address": {
+      "department": "Payments Ops",
+      "buildingNumber": "1",
+      "streetName": "Broadway",
+      "city": "New York",
+      "citySubDivision": "",
+      "province": "NY",
+      "country": "US",
+      "postcode": "10006"
+    },
+    "account": {
+      "iban": "FR1420041010050500013M02606",
+      "id": "DBTRAGT-ACC-01"
+    }
+  },
+
+  "debtor": {
+    "bic": "DEUTDEFF",
+    "name": "Bob Corporation",
+    "address": {
+      "department": "Accounts Payable",
+      "buildingNumber": "42",
+      "streetName": "Hauptstrasse",
+      "city": "Frankfurt",
+      "citySubDivision": "",
+      "province": "Hessen",
+      "country": "DE",
+      "postcode": "60313"
+    },
+    "account": {
+      "iban": "DE89370400440532013000",
+      "id": "DEB-ACC-100"
+    }
+  },
+
+  "creditorAgent": {
+    "bic": "BNPAFRPP",
+    "name": "BNP Creditor Agent",
+    "address": {
+      "department": "Collections",
+      "buildingNumber": "3",
+      "streetName": "Rue de la Banque",
+      "city": "Paris",
+      "citySubDivision": "",
+      "province": "Ile-de-France",
+      "country": "FR",
+      "postcode": "75002"
+    },
+    "account": {
+      "iban": "ES9121000418450200051332",
+      "id": "CDRAGT-ACC-01"
+    }
+  },
+
+  "creditor": {
+    "bic": "BOFAUS3N",
+    "name": "Alice Ltd",
+    "address": {
+      "department": "Treasury",
+      "buildingNumber": "100",
+      "streetName": "Market Street",
+      "city": "San Francisco",
+      "citySubDivision": "",
+      "province": "CA",
+      "country": "US",
+      "postcode": "94105"
+    },
+    "account": {
+      "iban": "IE29AIBK93115212345678",
+      "id": "CRD-ACC-200"
+    }
+  }
+}

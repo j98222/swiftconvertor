@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SwiftConvertor — Dashboard</title>
+  <style>
+    body{font-family:Segoe UI,Arial,Helvetica,sans-serif;background:#f5f7fb;color:#222;margin:0}
+    header{background:#fff;padding:12px 20px;border-bottom:1px solid #e6e9ef}
+    main{padding:20px}
+    .container{max-width:900px;margin:20px auto}
+    .placeholder{height:300px;border:2px dashed #d6dbe6;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#7a8698}
+    .btn-logout{background:#efefef;border:1px solid #ddd;padding:6px 10px;border-radius:6px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <header>
+    <span style="font-weight:600">SwiftConvertor</span>
+    <button id="logout" class="btn-logout" style="float:right">Sign out</button>
+  </header>
+  <main>
+    <div class="container">
+      <h2>Payment Input</h2>
+      <form id="paymentForm">
+        <div style="display:flex;gap:12px">
+          <div style="flex:1">
+            <label>Payment Type</label>
+            <select id="paymentType" name="paymentType" required>
+              <option value="pacs.009.001.08">PACS009</option>
+              <option value="pacs.008.001.08">PACS008</option>
+            </select>
+          </div>
+          <div style="flex:1">
+            <label>Settlement Method</label>
+            <select id="settlementMethod" name="settlementMethod">
+              <option value="">(choose)</option>
+              <option value="INDA">INDA</option>
+              <option value="INGA">INGA</option>
+              <option value="COVE">COVE</option>
+              <option value="CLRG">CLRG</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-top:10px">
+          <div style="flex:1">
+            <label>From BIC</label>
+            <input id="fromBIC" name="fromBIC" type="text" placeholder="BANKDEFFXXX" />
+          </div>
+          <div style="flex:1">
+            <label>To BIC</label>
+            <input id="toBIC" name="toBIC" type="text" placeholder="BANKGB22XXX" />
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-top:10px">
+          <div style="flex:1">
+            <label>Settlement Amount</label>
+            <input id="amount" name="amount" type="number" step="0.01" min="0" placeholder="0.00" required />
+          </div>
+          <div style="flex:1">
+            <label>Settlement Date</label>
+            <input id="settlementDate" name="settlementDate" type="date" />
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <label>Remittance Information</label>
+          <textarea id="remittanceInfo" name="remittanceInfo" rows="4" style="width:100%" placeholder="Remittance Information"></textarea>
+        </div>
+
+        <!-- Collapsible zones: collapsed by default -->
+        <div class="zones" style="margin-top:14px">
+          <style>
+            .zone{border:1px solid #e6e9ef;border-radius:6px;margin-top:8px;background:#fff}
+            .zone-header{padding:8px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+            .zone-title{font-weight:600}
+            .zone-toggle{font-size:12px;color:#666}
+            .zone-content{padding:12px;border-top:1px solid #eef2f7;display:none}
+            .zone-content.open{display:block}
+            .sub-placeholder{padding:12px;border:1px dashed #e1e6ef;border-radius:6px;color:#667788;background:#fbfdff}
+            /* Make labels stack above inputs and add breathing room */
+            .sub-placeholder label{display:block;margin-bottom:6px;font-size:13px;color:#334155}
+            .sub-placeholder input, .sub-placeholder textarea, .sub-placeholder select{width:100%;padding:6px;border:1px solid #d6dbe6;border-radius:4px;box-sizing:border-box}
+            /* For the bic/name two-column rows, keep inputs aligned */
+            .sub-placeholder > div > div > input{width:100%}
+            .invalid{border-color:#b00020;background:#fff7f7}
+            .field-error{color:#b00020;font-size:12px;margin-top:4px}
+          </style>
+
+          <!-- zone template instances -->
+          <div class="zone" id="zone-inter1">
+            <div class="zone-header" data-target="zone-inter1-content">
+              <div class="zone-title">Intermediary Agent 1</div>
+              <div class="zone-toggle">Expand</div>
+            </div>
+            <div class="zone-content" id="zone-inter1-content">
+              <div class="sub-placeholder">
+                <div style="display:flex;gap:8px">
+                  <div style="flex:1">
+                    <label>BIC</label>
+                    <input id="inter1_bic" type="text" />
+                  </div>
+                  <div style="flex:2">
+                    <label>Name</label>
+                    <input id="inter1_name" type="text" />
+                  </div>
+                </div>
+                <div style="margin-top:8px">
+                  <strong>Address</strong>
+                  <div style="display:flex;gap:8px;margin-top:6px">
+                    <input id="inter1_addr_dept" placeholder="Department" />
+                    <input id="inter1_addr_bldg" placeholder="Building Number" />
+                    <input id="inter1_addr_strt" placeholder="Street Name" />
+                  </div>
+                  <div style="display:flex;gap:8px;margin-top:6px">
+                    <input id="inter1_addr_city" placeholder="City" />
+                    <input id="inter1_addr_citysub" placeholder="City Sub Division" />
+                    <input id="inter1_addr_prov" placeholder="Province" />
+                    <input id="inter1_addr_ctry" placeholder="Country" />
+                  </div>
+                </div>
+                <div style="margin-top:8px">
+                  <strong>Account</strong>
+                  <div style="display:flex;gap:8px;margin-top:6px">
+                    <input id="inter1_acc_iban" placeholder="IBAN" />
+                    <input id="inter1_acc_id" placeholder="Id" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="zone" id="zone-inter2">
+            <div class="zone-header" data-target="zone-inter2-content">
+              <div class="zone-title">Intermediary Agent 2</div>
+              <div class="zone-toggle">Expand</div>
+            </div>
+            <div class="zone-content" id="zone-inter2-content">
+              <div class="sub-placeholder">
+                <div style="display:flex;gap:8px">
+                  <div style="flex:1"><label>BIC</label><input id="inter2_bic" type="text" /></div>
+                  <div style="flex:2"><label>Name</label><input id="inter2_name" type="text" /></div>
+                </div>
+                <div style="margin-top:8px"><strong>Address</strong>
+                  <div style="display:flex;gap:8px;margin-top:6px">
+                    <input id="inter2_addr_dept" placeholder="Department" />
+                    <input id="inter2_addr_bldg" placeholder="Building Number" />
+                    <input id="inter2_addr_strt" placeholder="Street Name" />
+                  </div>
+                  <div style="display:flex;gap:8px;margin-top:6px">
+                    <input id="inter2_addr_city" placeholder="City" />
+                    <input id="inter2_addr_citysub" placeholder="City Sub Division" />
+                    <input id="inter2_addr_prov" placeholder="Province" />
+                    <input id="inter2_addr_ctry" placeholder="Country" />
+                  </div>
+                </div>
+                <div style="margin-top:8px"><strong>Account</strong>
+                  <div style="display:flex;gap:8px;margin-top:6px">
+                    <input id="inter2_acc_iban" placeholder="IBAN" />
+                    <input id="inter2_acc_id" placeholder="Id" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="zone" id="zone-debtor-agent">
+            <div class="zone-header" data-target="zone-debtor-agent-content">
+              <div class="zone-title">Debtor Agent</div>
+              <div class="zone-toggle">Expand</div>
+            </div>
+            <div class="zone-content" id="zone-debtor-agent-content">
+              <div class="sub-placeholder">
+                <div style="display:flex;gap:8px"><div style="flex:1"><label>BIC</label><input id="debtorAgent_bic" /></div><div style="flex:2"><label>Name</label><input id="debtorAgent_name" /></div></div>
+                <div style="margin-top:8px"><strong>Address</strong>
+                  <div style="display:flex;gap:8px;margin-top:6px">
+                    <input id="debtorAgent_addr_dept" placeholder="Department" />
+                    <input id="debtorAgent_addr_bldg" placeholder="Building Number" />
+                    <input id="debtorAgent_addr_strt" placeholder="Street Name" />
+                  </div>
+                  <div style="display:flex;gap:8px;margin-top:6px">
+                    <input id="debtorAgent_addr_city" placeholder="City" />
+                    <input id="debtorAgent_addr_citysub" placeholder="City Sub Division" />
+                    <input id="debtorAgent_addr_prov" placeholder="Province" />
+                    <input id="debtorAgent_addr_ctry" placeholder="Country" />
+                  </div>
+                </div>
+                <div style="margin-top:8px"><strong>Account</strong>
+                  <div style="display:flex;gap:8px;margin-top:6px"><input id="debtorAgent_acc_iban" placeholder="IBAN" /><input id="debtorAgent_acc_id" placeholder="Id" /></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="zone" id="zone-debtor">
+            <div class="zone-header" data-target="zone-debtor-content">
+              <div class="zone-title">Debtor</div>
+              <div class="zone-toggle">Expand</div>
+            </div>
+            <div class="zone-content" id="zone-debtor-content">
+              <div class="sub-placeholder">
+                <div style="display:flex;gap:8px"><div style="flex:1"><label>BIC</label><input id="debtor_bic" /></div><div style="flex:2"><label>Name</label><input id="debtor_name" /></div></div>
+                <div style="margin-top:8px"><strong>Address</strong>
+                  <div style="display:flex;gap:8px;margin-top:6px">
+                    <input id="debtor_addr_dept" placeholder="Department" />
+                    <input id="debtor_addr_bldg" placeholder="Building Number" />
+                    <input id="debtor_addr_strt" placeholder="Street Name" />
+                  </div>
+                  <div style="display:flex;gap:8px;margin-top:6px">
+                    <input id="debtor_addr_city" placeholder="City" />
+                    <input id="debtor_addr_citysub" placeholder="City Sub Division" />
+                    <input id="debtor_addr_prov" placeholder="Province" />
+                    <input id="debtor_addr_ctry" placeholder="Country" />
+                  </div>
+                </div>
+                <div style="margin-top:8px"><strong>Account</strong>
+                  <div style="display:flex;gap:8px;margin-top:6px"><input id="debtor_acc_iban" placeholder="IBAN" /><input id="debtor_acc_id" placeholder="Id" /></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="zone" id="zone-creditor-agent">
+            <div class="zone-header" data-target="zone-creditor-agent-content">
+              <div class="zone-title">Creditor Agent</div>
+              <div class="zone-toggle">Expand</div>
+            </div>
+            <div class="zone-content" id="zone-creditor-agent-content">
+              <div class="sub-placeholder">
+                <div style="display:flex;gap:8px"><div style="flex:1"><label>BIC</label><input id="creditorAgent_bic" /></div><div style="flex:2"><label>Name</label><input id="creditorAgent_name" /></div></div>
+                <div style="margin-top:8px"><strong>Address</strong>
+                  <div style="display:flex;gap:8px;margin-top:6px">
+                    <input id="creditorAgent_addr_dept" placeholder="Department" />
+                    <input id="creditorAgent_addr_bldg" placeholder="Building Number" />
+                    <input id="creditorAgent_addr_strt" placeholder="Street Name" />
+                  </div>
+                  <div style="display:flex;gap:8px;margin-top:6px">
+                    <input id="creditorAgent_addr_city" placeholder="City" />
+                    <input id="creditorAgent_addr_citysub" placeholder="City Sub Division" />
+                    <input id="creditorAgent_addr_prov" placeholder="Province" />
+                    <input id="creditorAgent_addr_ctry" placeholder="Country" />
+                  </div>
+                </div>
+                <div style="margin-top:8px"><strong>Account</strong>
+                  <div style="display:flex;gap:8px;margin-top:6px"><input id="creditorAgent_acc_iban" placeholder="IBAN" /><input id="creditorAgent_acc_id" placeholder="Id" /></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="zone" id="zone-creditor">
+            <div class="zone-header" data-target="zone-creditor-content">
+              <div class="zone-title">Creditor</div>
+              <div class="zone-toggle">Expand</div>
+            </div>
+            <div class="zone-content" id="zone-creditor-content">
+              <div class="sub-placeholder">
+                <div style="display:flex;gap:8px"><div style="flex:1"><label>BIC</label><input id="creditor_bic" /></div><div style="flex:2"><label>Name</label><input id="creditor_name" /></div></div>
+                <div style="margin-top:8px"><strong>Address</strong>
+                  <div style="display:flex;gap:8px;margin-top:6px">
+                    <input id="creditor_addr_dept" placeholder="Department" />
+                    <input id="creditor_addr_bldg" placeholder="Building Number" />
+                    <input id="creditor_addr_strt" placeholder="Street Name" />
+                  </div>
+                  <div style="display:flex;gap:8px;margin-top:6px">
+                    <input id="creditor_addr_city" placeholder="City" />
+                    <input id="creditor_addr_citysub" placeholder="City Sub Division" />
+                    <input id="creditor_addr_prov" placeholder="Province" />
+                    <input id="creditor_addr_ctry" placeholder="Country" />
+                  </div>
+                </div>
+                <div style="margin-top:8px"><strong>Account</strong>
+                  <div style="display:flex;gap:8px;margin-top:6px"><input id="creditor_acc_iban" placeholder="IBAN" /><input id="creditor_acc_id" placeholder="Id" /></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button id="generate" class="btn" type="submit">Generate & Download XML</button>
+          <button id="clear" type="button" class="btn-logout">Clear</button>
+        </div>
+
+        <div id="formStatus" style="margin-top:10px;color:#b00020;display:none"></div>
+      </form>
+    </div>
+  </main>
+  <script>
+    (function(){
+      const ok = sessionStorage.getItem('swift.loggedIn');
+      if(!ok){ location.href = '/'; }
+      document.getElementById('logout').addEventListener('click', function(){ sessionStorage.removeItem('swift.loggedIn'); location.href = '/'; });
+
+      // helpers
+      const form = document.getElementById('paymentForm');
+      const status = document.getElementById('formStatus');
+      const fromBIC = document.getElementById('fromBIC');
+      const toBIC = document.getElementById('toBIC');
+
+      function showStatus(msg){ status.textContent = msg; status.style.display = msg ? 'block' : 'none'; }
+
+      // client-side validators
+      function bicValid(b){ if(!b) return true; return /^[A-Z]{4}[A-Z]{2}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3})?$/.test(b); }
+      function ibanValid(iban){ if(!iban) return true; const s = iban.replace(/\s+/g,'').toUpperCase(); if(!/^[A-Z]{2}[0-9A-Z]{14,30}$/.test(s)) return false; // basic format
+        // mod-97
+        const rearr = s.slice(4) + s.slice(0,4); let conv=''; for(const ch of rearr){ if(ch>='0'&&ch<='9') conv+=ch; else conv+= (ch.charCodeAt(0)-55).toString(); } let rem=0; for(let i=0;i<conv.length;i+=7){ const block = rem.toString()+conv.substr(i,7); rem = parseInt(block,10) % 97; } return rem===1; }
+      function amountValid(a){ if(a===undefined||a===null||a==='') return false; const n=Number(a); return Number.isFinite(n) && n>=0; }
+      function dateValid(d){ if(!d) return true; return /^\d{4}-\d{2}-\d{2}$/.test(d); }
+
+      function setFieldError(el, msg){ if(!el) return; let e = el.nextElementSibling; if(e && e.classList && e.classList.contains('field-error')){ e.textContent = msg||''; e.style.display = msg ? 'block' : 'none'; } else if(msg){ e = document.createElement('div'); e.className='field-error'; e.textContent = msg; el.parentNode.insertBefore(e, el.nextSibling); }
+        if(msg) el.classList.add('invalid'); else el.classList.remove('invalid'); }
+
+      // uppercase BICs as user types
+      [fromBIC, toBIC].forEach(el => {
+        el.addEventListener('input', () => { el.value = el.value.toUpperCase(); });
+      });
+
+      // collapsible zones
+      document.querySelectorAll('.zone-header').forEach(h => {
+        const targetId = h.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+        const toggle = h.querySelector('.zone-toggle');
+        // ensure collapsed by default
+        if(content){ content.classList.remove('open'); toggle.textContent = 'Expand'; }
+        h.addEventListener('click', () => {
+          if(!content) return;
+          const open = content.classList.toggle('open');
+          toggle.textContent = open ? 'Collapse' : 'Expand';
+        });
+      });
+
+      // clear
+      document.getElementById('clear').addEventListener('click', () => {
+        form.reset(); showStatus('');
+        document.querySelectorAll('.field-error').forEach(e => e.remove());
+        document.querySelectorAll('.invalid').forEach(i => i.classList.remove('invalid'));
+      });
+
+      form.addEventListener('submit', async function(e){
+        e.preventDefault();
+        showStatus('');
+        function zone(id){
+          return {
+            bic: (document.getElementById(id + '_bic')||{value:''}).value.trim(),
+            name: (document.getElementById(id + '_name')||{value:''}).value.trim(),
+            address: {
+              department: (document.getElementById(id + '_addr_dept')||{value:''}).value.trim(),
+              buildingNumber: (document.getElementById(id + '_addr_bldg')||{value:''}).value.trim(),
+              streetName: (document.getElementById(id + '_addr_strt')||{value:''}).value.trim(),
+              city: (document.getElementById(id + '_addr_city')||{value:''}).value.trim(),
+              citySubDivision: (document.getElementById(id + '_addr_citysub')||{value:''}).value.trim(),
+              province: (document.getElementById(id + '_addr_prov')||{value:''}).value.trim(),
+              country: (document.getElementById(id + '_addr_ctry')||{value:''}).value.trim()
+            },
+            account: {
+              iban: (document.getElementById(id + '_acc_iban')||{value:''}).value.trim(),
+              id: (document.getElementById(id + '_acc_id')||{value:''}).value.trim()
+            }
+          };
+        }
+
+        // client-side validation
+        const amountEl = document.getElementById('amount');
+        const fromEl = document.getElementById('fromBIC');
+        const toEl = document.getElementById('toBIC');
+        let clientErrors = 0;
+        setFieldError(amountEl, amountValid(amountEl.value) ? '' : 'Enter a non-negative amount');
+        clientErrors += amountValid(amountEl.value) ? 0 : 1;
+        setFieldError(fromEl, bicValid(fromEl.value) ? '' : 'Invalid BIC');
+        clientErrors += bicValid(fromEl.value) ? 0 : 1;
+        setFieldError(toEl, bicValid(toEl.value) ? '' : 'Invalid BIC');
+        clientErrors += bicValid(toEl.value) ? 0 : 1;
+
+        // validate zone fields IBAN/BIC
+        ['inter1','inter2','debtorAgent','debtor','creditorAgent','creditor'].forEach(id => {
+          const bicEl = document.getElementById(id.replace(/inter/,'inter') + '_bic') || document.getElementById(id + '_bic');
+          if(bicEl){ const ok = bicValid(bicEl.value.toUpperCase()); setFieldError(bicEl, ok ? '' : 'Invalid BIC'); clientErrors += ok ? 0 : 1; }
+          const ibanEl = document.getElementById(id + '_acc_iban');
+          if(ibanEl){ const ok2 = ibanValid(ibanEl.value); setFieldError(ibanEl, ok2 ? '' : 'Invalid IBAN'); clientErrors += ok2 ? 0 : 1; }
+        });
+
+        if(clientErrors > 0){ showStatus('Fix validation errors before submitting'); return; }
+
+        const data = {
+          paymentType: document.getElementById('paymentType').value.includes('008') ? '008' : '009',
+          msgDefIdr: document.getElementById('paymentType').value,
+          fromBIC: fromBIC.value.trim(),
+          toBIC: toBIC.value.trim(),
+          requestType: document.getElementById('settlementMethod').value || '',
+          amount: document.getElementById('amount').value,
+          settlementDate: document.getElementById('settlementDate').value || '',
+          remittanceInfo: document.getElementById('remittanceInfo').value || '',
+          intermediaryAgent1: zone('inter1'),
+          intermediaryAgent2: zone('inter2'),
+          debtorAgent: zone('debtorAgent'),
+          debtor: zone('debtor'),
+          creditorAgent: zone('creditorAgent'),
+          creditor: zone('creditor')
+        };
+
+        try{
+          const resp = await fetch('/convert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+
+          if(!resp.ok){
+            // try parse JSON errors
+            const j = await resp.json().catch(()=>null);
+            if (j && j.errors && Array.isArray(j.errors)){
+              // clear previous
+              document.querySelectorAll('.field-error').forEach(e=>e.remove());
+              document.querySelectorAll('.invalid').forEach(i=>i.classList.remove('invalid'));
+              const mapping = {
+                intermediaryAgent1: 'inter1', intermediaryAgent2: 'inter2', debtorAgent: 'debtorAgent', debtor: 'debtor', creditorAgent: 'creditorAgent', creditor: 'creditor'
+              };
+              let summary = [];
+              j.errors.forEach(err => {
+                // try extract field token (like "intermediaryAgent1.account.iban")
+                const m = String(err).match(/^([\w.]+)\s+(.*)$/);
+                if(m){
+                  const field = m[1];
+                  const msg = m[2] || err;
+                  const parts = field.split('.');
+                  let elId = null;
+                  if(parts[0] in mapping){
+                    const zone = mapping[parts[0]];
+                    if(parts.length===1){ elId = zone + '_bic'; }
+                    else if(parts[1]==='account' && parts[2]==='iban') elId = zone + '_acc_iban';
+                    else if(parts[1]==='account' && parts[2]==='id') elId = zone + '_acc_id';
+                    else if(parts[1]==='bic') elId = zone + '_bic';
+                    else if(parts[1]==='name') elId = zone + '_name';
+                    // fallback
+                  } else {
+                    // top-level fields
+                    if(field==='fromBIC' || field==='toBIC' || field==='amount' || field==='settlementDate' || field==='remittanceInfo') elId = field;
+                  }
+
+                  if(elId){
+                    const el = document.getElementById(elId);
+                    if(el) setFieldError(el, msg);
+                    else summary.push(err);
+                  } else {
+                    summary.push(err);
+                  }
+                } else {
+                  summary.push(err);
+                }
+              });
+              if(summary.length) showStatus(summary.join('; '));
+              else showStatus('Validation errors (see fields)');
+              return;
+            }
+            throw new Error(j && j.error ? j.error : `Server returned ${resp.status}`);
+          }
+
+          const text = await resp.text();
+          // trigger download
+          const blob = new Blob([text], { type: 'application/xml' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          const now = new Date().toISOString().replace(/[:.]/g,'');
+          a.download = `pacs-${data.paymentType}-${now}.xml`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          showStatus('Downloaded XML');
+        } catch(err){
+          console.error(err);
+          showStatus(err.message || 'Failed to generate XML');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
