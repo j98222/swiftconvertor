@@ -8,12 +8,12 @@ package "Frontend" {
 }
 
 package "Backend" {
-  [Node.js Express Server]\nserver.js as WebServer
+  [Node.js Express Server\nserver.js] as WebServer
   [DataPDU AppHdr/Document Generator] as Generator
 }
 
 package "Validator" {
-  [Validator REST API]\ntools/validator/api/server.js as ValidatorAPI
+  [Validator REST API\ntools/validator/api/server.js] as ValidatorAPI
   [xmllint (libxml2)] as Xmllint
   folder XSDs {
     file "pacs.009.001.09.xsd" as XSD1
