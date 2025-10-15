@@ -1,0 +1,99 @@
+﻿<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.009.001.09">
+    <FICdtTrf>
+        <GrpHdr>
+          <MsgId>MSG-20251015T192215684Z-7f04</MsgId>
+          <CreDtTm>2025-10-15T19:22:15Z</CreDtTm>
+          <NbOfTxs>1</NbOfTxs>
+          <SttlmInf>
+            <SttlmMtd>CLRG</SttlmMtd>
+            <ClrSys>
+              <Cd>LYX</Cd>
+            </ClrSys>
+          </SttlmInf>
+        </GrpHdr>
+        <CdtTrfTxInf>
+          <PmtId>
+            <EndToEndId>MSG-20251015T192215684Z-7f04</EndToEndId>
+          </PmtId>
+          <IntrBkSttlmAmt Ccy="CAD">1000.50</IntrBkSttlmAmt>
+          <IntrBkSttlmDt>2025-10-20</IntrBkSttlmDt>
+          <IntrmyAgt1>
+            <FinInstnId>
+  <BICFI>NEDSZAJJ</BICFI>
+            </FinInstnId>
+          </IntrmyAgt1>
+          <IntrmyAgt1Acct>
+            <Id>
+  <IBAN>NL91ABNA0417164300</IBAN>
+</Id>
+          </IntrmyAgt1Acct>
+          <IntrmyAgt2>
+            <FinInstnId>
+  <BICFI>RBOSGB2L</BICFI>
+            </FinInstnId>
+          </IntrmyAgt2>
+          <IntrmyAgt2Acct>
+            <Id>
+  <IBAN>GB82WEST12345698765432</IBAN>
+</Id>
+          </IntrmyAgt2Acct>
+          <Dbtr>
+            <FinInstnId>
+  <BICFI>DEUTDEFF</BICFI>
+  <Nm>Bob Corporation</Nm>
+  <PstlAdr>
+    <AdrLine>Accounts Payable</AdrLine>
+    <AdrLine>Hauptstrasse 42</AdrLine>
+    <AdrLine>Frankfurt</AdrLine>
+    <AdrLine>Hessen</AdrLine>
+  </PstlAdr>
+            </FinInstnId>
+          </Dbtr>
+          <DbtrAcct>
+            <Id>
+  <IBAN>DE89370400440532013000</IBAN>
+</Id>
+          </DbtrAcct>
+          <DbtrAgt>
+            <FinInstnId>
+  <BICFI>CHASUS33</BICFI>
+            </FinInstnId>
+          </DbtrAgt>
+          <DbtrAgtAcct>
+            <Id>
+  <IBAN>FR1420041010050500013M02606</IBAN>
+</Id>
+          </DbtrAgtAcct>
+          <CdtrAgt>
+            <FinInstnId>
+  <BICFI>BNPAFRPP</BICFI>
+            </FinInstnId>
+          </CdtrAgt>
+          <CdtrAgtAcct>
+            <Id>
+  <IBAN>ES9121000418450200051332</IBAN>
+</Id>
+          </CdtrAgtAcct>
+          <Cdtr>
+            <FinInstnId>
+  <BICFI>BOFAUS3N</BICFI>
+  <Nm>Alice Ltd</Nm>
+  <PstlAdr>
+    <AdrLine>Treasury</AdrLine>
+    <AdrLine>Market Street 100</AdrLine>
+    <AdrLine>San Francisco</AdrLine>
+    <AdrLine>CA</AdrLine>
+  </PstlAdr>
+            </FinInstnId>
+          </Cdtr>
+          <CdtrAcct>
+            <Id>
+  <IBAN>IE29AIBK93115212345678</IBAN>
+</Id>
+          </CdtrAcct>
+          <RmtInf>
+            <Ustrd>Invoice 2025-12345</Ustrd>
+          </RmtInf>
+        </CdtTrfTxInf>
+      </FICdtTrf>
+</Document>

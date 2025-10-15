@@ -3,8 +3,18 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const app = express();
 const port = process.env.PORT || 3000;
+
+// fetch polyfill for older Node versions (Node 18+ has global fetch)
+if (typeof fetch === 'undefined') {
+  try { global.fetch = require('undici').fetch; } catch (e) { /* undici not available, validator calls may fail */ }
+}
+
+// Configuration constants for DataPDU Message fields
+const SENDER_CODE = 'AAAAAAAAXXX';
+const SENDER_DN = 'ou=xxx,o=aaaaaaa9,o=swift';
 
 // Middleware
 app.use(cors());
@@ -32,6 +42,13 @@ function formatSwiftDateTime(d) {
   return iso.replace(/\.\d+Z$/, 'Z');
 }
 
+function generateUniqueId() {
+  const now = new Date();
+  const ts = now.toISOString().replace(/[:.-]/g, '').replace(/Z$/, 'Z');
+  const rand = Math.floor(Math.random() * 0xffff).toString(16).padStart(4, '0');
+  return `MSG-${ts}-${rand}`;
+}
+
 function normalizeFormat(input) {
   if (!input) return '009';
   const s = String(input).toLowerCase().replace(/^pacs\.?/, '');
@@ -46,10 +63,11 @@ function bicSafe(bic) {
 
 function buildHeader(values, defaultMsgDef) {
   const msgDef = escapeXml(values.msgDefIdr || defaultMsgDef);
-  const creDt = escapeXml(formatSwiftDateTime());
+  const creDt = escapeXml(values._creDt || formatSwiftDateTime());
   const bizSvc = 'paymentsca.lynx.03';
   const fromBIC = escapeXml(bicSafe(values.fromBIC));
   const toBIC = escapeXml(bicSafe(values.toBIC));
+  const bizMsgId = escapeXml(values.bizMsgIdr || values._uniqueId || generateUniqueId());
 
   const saaHeader = [
     '<SAAHeader>',
@@ -64,8 +82,9 @@ function buildHeader(values, defaultMsgDef) {
   ].join('\n');
 
   const appHdr = [
-    '<AppHdr>',
+    '<AppHdr xmlns="urn:iso:std:iso:20022:tech:xsd:head.001.001.01">',
     `  <MsgDefIdr>${msgDef}</MsgDefIdr>`,
+    `  <BizMsgIdr>${bizMsgId}</BizMsgIdr>`,
     `  <CreDt>${creDt}</CreDt>`,
     `  <BizSvc>${bizSvc}</BizSvc>`,
     `  <Fr><FIId><FINInstnId><BICFI>${fromBIC}</BICFI></FINInstnId></FIId></Fr>`,
@@ -73,7 +92,7 @@ function buildHeader(values, defaultMsgDef) {
     '</AppHdr>',
   ].join('\n');
 
-  return { headerXml: [saaHeader, networkInfo].join('\n'), appHdrXml: appHdr };
+  return { headerXml: [saaHeader, networkInfo].join('\n'), appHdrXml: appHdr, bizMsgId };
 }
 
 function buildPacsBody(values, tagName) {
@@ -81,32 +100,38 @@ function buildPacsBody(values, tagName) {
   function finInstnIdXml(prefix, obj) {
     if(!obj) obj = {};
     const parts = [];
-    parts.push(`${prefix}<FinInstnId>`);
-    if (obj.bic) parts.push(`  <BICFI>${escapeXml(obj.bic)}</BICFI>`);
-    if (obj.name) parts.push(`  <Nm>${escapeXml(obj.name)}</Nm>`);
-    // Postal address
-    const a = obj.address || {};
-    if (a.department || a.streetName || a.buildingNumber || a.city || a.citySubDivision || a.province || a.country) {
-      parts.push('  <PstlAdr>');
-      if (a.department) parts.push(`    <Dept>${escapeXml(a.department)}</Dept>`);
-      if (a.streetName) parts.push(`    <StrtNm>${escapeXml(a.streetName)}</StrtNm>`);
-      if (a.buildingNumber) parts.push(`    <BldgNb>${escapeXml(a.buildingNumber)}</BldgNb>`);
-      if (a.city) parts.push(`    <TwnNm>${escapeXml(a.city)}</TwnNm>`);
-      if (a.citySubDivision) parts.push(`    <CtrySubDvsn>${escapeXml(a.citySubDivision)}</CtrySubDvsn>`);
-      if (a.province) parts.push(`    <PstCd>${escapeXml(a.province)}</PstCd>`);
-      if (a.country) parts.push(`    <Ctry>${escapeXml(a.country)}</Ctry>`);
-      parts.push('  </PstlAdr>');
-    }
-    parts.push('</FinInstnId>');
+      // For FinInstnId (used in agent elements and also Debtor/Creditor when requested)
+      // includeParty flag enables emitting Nm and PstlAdr inside FinInstnId (required for BranchAndFinancialInstitutionIdentification6)
+      parts.push(`${prefix}<FinInstnId>`);
+      if (obj.bic) parts.push(`  <BICFI>${escapeXml(obj.bic)}</BICFI>`);
+      if (obj.name && obj._includeParty) {
+        parts.push(`  <Nm>${escapeXml(obj.name)}</Nm>`);
+      }
+      // Postal address when requested
+      const a = obj.address || {};
+      if (obj._includeParty && a && (a.department || a.streetName || a.buildingNumber || a.city || a.province || a.postalCode)) {
+        parts.push('  <PstlAdr>');
+        const lines = [];
+        if (a.department) lines.push(escapeXml(a.department));
+        const street = [a.streetName, a.buildingNumber].filter(Boolean).join(' ').trim();
+        if (street) lines.push(escapeXml(street));
+        if (a.city) lines.push(escapeXml(a.city));
+        if (a.province) lines.push(escapeXml(a.province));
+        if (a.postalCode) lines.push(escapeXml(a.postalCode));
+        lines.forEach(l => parts.push(`    <AdrLine>${l}</AdrLine>`));
+        parts.push('  </PstlAdr>');
+      }
+      parts.push(`${prefix}</FinInstnId>`);
     return parts.join('\n');
   }
+
 
   function accountXml(prefix, acc) {
     if(!acc) acc = {};
     const parts = [];
     parts.push(`${prefix}<Id>`);
-    if (acc.iban) parts.push(`  <IBAN>${escapeXml(acc.iban)}</IBAN>`);
-    if (acc.id) parts.push(`  <Othr>\n    <Id>${escapeXml(acc.id)}</Id>\n  </Othr>`);
+  if (acc.iban) parts.push(`  <IBAN>${escapeXml(acc.iban)}</IBAN>`);
+  // omit Othr by default to avoid schema mismatch; include only IBAN when present
     parts.push('</Id>');
     return parts.join('\n');
   }
@@ -116,6 +141,11 @@ function buildPacsBody(values, tagName) {
   const stlDate = values.settlementDate || '';
   const rmt = values.remittanceInfo || '';
   const sttlmMtd = values.requestType || '';
+  // map requested settlement method to allowed enumeration used by the XSD
+  const allowedSttlm = ['INDA','INGA','COVE','CLRG','TDSO','TDSA'];
+  const sttlmCode = allowedSttlm.includes(sttlmMtd) ? sttlmMtd : 'CLRG';
+  const uniqueId = escapeXml(values._uniqueId || values.bizMsgIdr || generateUniqueId());
+  const creDt = escapeXml(values._creDt || formatSwiftDateTime());
 
   const inter1 = values.intermediaryAgent1 || {};
   const inter2 = values.intermediaryAgent2 || {};
@@ -125,15 +155,29 @@ function buildPacsBody(values, tagName) {
   const cdtr = values.creditor || {};
 
   const lines = [];
-  lines.push(`    <${tagName}>`);
-  lines.push('      <FICdtTrf>');
+  // ISO20022 payload: Document should contain FICdtTrf directly (no Pacs008/Pacs009 wrapper)
+  lines.push('    <FICdtTrf>');
   lines.push('        <GrpHdr>');
+  lines.push(`          <MsgId>${uniqueId}</MsgId>`);
+  lines.push(`          <CreDtTm>${creDt}</CreDtTm>`);
+  lines.push('          <NbOfTxs>1</NbOfTxs>');
   lines.push('          <SttlmInf>');
-  lines.push(`            <SttlmMtd>${escapeXml(sttlmMtd)}</SttlmMtd>`);
+  lines.push(`            <SttlmMtd>${escapeXml(sttlmCode)}</SttlmMtd>`);
+  lines.push('            <ClrSys>');
+  lines.push('              <Cd>LYX</Cd>');
+  lines.push('            </ClrSys>');
+  // If this is a pacs.008 message and charge bearer present, include ChrgBr
+  if (tagName === 'Pacs008' && values && values.chargeBearer) {
+    lines.push(`            <ChrgBr>${escapeXml(values.chargeBearer)}</ChrgBr>`);
+  }
   lines.push('          </SttlmInf>');
   lines.push('        </GrpHdr>');
   lines.push('        <CdtTrfTxInf>');
-  lines.push(`          <IntrBkSttlmAmt>${escapeXml(amt)}</IntrBkSttlmAmt>`);
+  // Payment identifier required by schema: include EndToEndId only
+  lines.push('          <PmtId>');
+  lines.push(`            <EndToEndId>${uniqueId}</EndToEndId>`);
+  lines.push('          </PmtId>');
+  lines.push(`          <IntrBkSttlmAmt Ccy="CAD">${escapeXml(amt)}</IntrBkSttlmAmt>`);
   if (stlDate) lines.push(`          <IntrBkSttlmDt>${escapeXml(stlDate)}</IntrBkSttlmDt>`);
 
   // Intermediary Agent 1
@@ -153,6 +197,16 @@ function buildPacsBody(values, tagName) {
   lines.push(accountXml('            ', inter2.account));
   lines.push('          </IntrmyAgt2Acct>');
 
+  // Debtor (party) comes before Debtor Agent in the sequence required by the XSD
+  lines.push('          <Dbtr>');
+  // use FinInstnId with party info for Debtor to match BranchAndFinancialInstitutionIdentification6
+  dbtr._includeParty = true;
+  lines.push(finInstnIdXml('            ', dbtr));
+  lines.push('          </Dbtr>');
+  lines.push('          <DbtrAcct>');
+  lines.push(accountXml('            ', dbtr.account));
+  lines.push('          </DbtrAcct>');
+
   // Debtor Agent
   lines.push('          <DbtrAgt>');
   lines.push(finInstnIdXml('            ', dbtrAgt));
@@ -160,29 +214,6 @@ function buildPacsBody(values, tagName) {
   lines.push('          <DbtrAgtAcct>');
   lines.push(accountXml('            ', dbtrAgt.account));
   lines.push('          </DbtrAgtAcct>');
-
-  // Debtor
-  lines.push('          <Dbtr>');
-  lines.push('            <FinInstnId>');
-  if (dbtr.bic) lines.push(`              <BICFI>${escapeXml(dbtr.bic)}</BICFI>`);
-  if (dbtr.name) lines.push(`              <Nm>${escapeXml(dbtr.name)}</Nm>`);
-  const daddr = dbtr.address || {};
-  if (Object.keys(daddr).length) {
-    lines.push('              <PstlAdr>');
-    if (daddr.department) lines.push(`                <Dept>${escapeXml(daddr.department)}</Dept>`);
-    if (daddr.streetName) lines.push(`                <StrtNm>${escapeXml(daddr.streetName)}</StrtNm>`);
-    if (daddr.buildingNumber) lines.push(`                <BldgNb>${escapeXml(daddr.buildingNumber)}</BldgNb>`);
-    if (daddr.city) lines.push(`                <TwnNm>${escapeXml(daddr.city)}</TwnNm>`);
-    if (daddr.citySubDivision) lines.push(`                <CtrySubDvsn>${escapeXml(daddr.citySubDivision)}</CtrySubDvsn>`);
-    if (daddr.province) lines.push(`                <PstCd>${escapeXml(daddr.province)}</PstCd>`);
-    if (daddr.country) lines.push(`                <Ctry>${escapeXml(daddr.country)}</Ctry>`);
-    lines.push('              </PstlAdr>');
-  }
-  lines.push('            </FinInstnId>');
-  lines.push('          </Dbtr>');
-  lines.push('          <DbtrAcct>');
-  lines.push(accountXml('            ', dbtr.account));
-  lines.push('          </DbtrAcct>');
 
   // Creditor Agent
   lines.push('          <CdtrAgt>');
@@ -194,22 +225,8 @@ function buildPacsBody(values, tagName) {
 
   // Creditor
   lines.push('          <Cdtr>');
-  lines.push('            <FinInstnId>');
-  if (cdtr.bic) lines.push(`              <BICFI>${escapeXml(cdtr.bic)}</BICFI>`);
-  if (cdtr.name) lines.push(`              <Nm>${escapeXml(cdtr.name)}</Nm>`);
-  const caddr = cdtr.address || {};
-  if (Object.keys(caddr).length) {
-    lines.push('              <PstlAdr>');
-    if (caddr.department) lines.push(`                <Dept>${escapeXml(caddr.department)}</Dept>`);
-    if (caddr.streetName) lines.push(`                <StrtNm>${escapeXml(caddr.streetName)}</StrtNm>`);
-    if (caddr.buildingNumber) lines.push(`                <BldgNb>${escapeXml(caddr.buildingNumber)}</BldgNb>`);
-    if (caddr.city) lines.push(`                <TwnNm>${escapeXml(caddr.city)}</TwnNm>`);
-    if (caddr.citySubDivision) lines.push(`                <CtrySubDvsn>${escapeXml(caddr.citySubDivision)}</CtrySubDvsn>`);
-    if (caddr.province) lines.push(`                <PstCd>${escapeXml(caddr.province)}</PstCd>`);
-    if (caddr.country) lines.push(`                <Ctry>${escapeXml(caddr.country)}</Ctry>`);
-    lines.push('              </PstlAdr>');
-  }
-  lines.push('            </FinInstnId>');
+  cdtr._includeParty = true;
+  lines.push(finInstnIdXml('            ', cdtr));
   lines.push('          </Cdtr>');
   lines.push('          <CdtrAcct>');
   lines.push(accountXml('            ', cdtr.account));
@@ -224,49 +241,81 @@ function buildPacsBody(values, tagName) {
 
   lines.push('        </CdtTrfTxInf>');
   lines.push('      </FICdtTrf>');
-  lines.push(`    </${tagName}>`);
 
   return lines.join('\n');
 }
 
-function buildPacs009(values) {
-  const header = buildHeader(values, 'pacs.009.001.08');
-  const body = buildPacsBody(values, 'Pacs009');
-  return ['<?xml version="1.0" encoding="UTF-8"?>', '<DataPDU>', header, '  <Document xmlns="urn:swift:pacs.009">', body, '  </Document>', '</DataPDU>'].join('\n');
-}
+// removed legacy quick-build; use buildPacsDocument + buildDataPDU for proper envelope
 
 function buildPacsDocument(values, tagName) {
   const body = buildPacsBody(values, tagName);
   // Document with appropriate namespace
-  const ns = tagName === 'Pacs009' ? 'urn:swift:pacs.009' : 'urn:swift:pacs.008';
+  // Use ISO 20022 namespaces for pacs messages
+  // Use the 001.09 namespaces which match the XSD files present in app/xsds
+  const ns = tagName === 'Pacs009' ? 'urn:iso:std:iso:20022:tech:xsd:pacs.009.001.09' : 'urn:iso:std:iso:20022:tech:xsd:pacs.008.001.09';
   return `<Document xmlns="${ns}">\n${body}\n</Document>`;
 }
 
-function buildDataPDU(headerInnerXml, appHdrXml, documentXml) {
-  // Swift-standard DataPDU layout: Revision, Header, Body (AppHdr + Document), LAU
-  const revision = '<Revision>1</Revision>';
-  const header = ['<Header>', headerInnerXml || '', '</Header>'].join('\n');
+function buildDataPDU(headerInnerXml, appHdrXml, documentXml, fmt, bizMsgId) {
+  // Swift-standard DataPDU layout: Revision, Header (SAAHeader+NetworkInfo+Message), Body (AppHdr + Document), LAU
+  const revision = '<Revision>2.0.14</Revision>';
+
+  // Build Message node under Header per request
+  const senderReference = `${SENDER_CODE}$${escapeXml(bizMsgId || '')}`;
+  // align MessageIdentifier with local XSD versions
+  const messageIdentifier = fmt === '009' ? 'pacs.009.001.09' : 'pacs.008.001.09';
+  const message = [
+    '<Message>',
+    `  <SenderReference>${escapeXml(senderReference)}</SenderReference>`,
+    `  <MessageIdentifier>${messageIdentifier}</MessageIdentifier>`,
+  '  <Format>MX</Format>',
+  '  <NetworkInfo>',
+  '    <Service>paymentscanada.lynx</Service>',
+  '    <SWIFTNetNetworkInfo>',
+  `      <RequestType>${escapeXml(messageIdentifier)}</RequestType>`,
+  '      <RequestSubtype>paymentsca.lynx.00</RequestSubtype>',
+  '    </SWIFTNetNetworkInfo>',
+  '  </NetworkInfo>',
+    '  <Sender>',
+    `    <DN>${escapeXml(SENDER_DN)}</DN>`,
+    '    <FullName>',
+    `      <X1>${escapeXml(SENDER_CODE)}</X1>`,
+    '    </FullName>',
+    '  </Sender>',
+    '  <Receiver>',
+    `    <DN>${escapeXml(SENDER_DN)}</DN>`,
+    '    <FullName>',
+    `      <X1>${escapeXml(SENDER_CODE)}</X1>`,
+    '    </FullName>',
+    '  </Receiver>',
+    '  <InterfaceInfo>',
+    `    <UserReference>${escapeXml(bizMsgId || '')}</UserReference>`,
+    '  </InterfaceInfo>',
+    '</Message>'
+  ].join('\n');
+
+  const header = ['<Header>', headerInnerXml || '', message, '</Header>'].join('\n');
   const body = ['<Body>', appHdrXml || '', documentXml || '', '</Body>'].join('\n');
   const lau = '<LAU></LAU>'; // placeholder for signing/LAU
 
-  return ['<?xml version="1.0" encoding="UTF-8"?>', '<DataPDU>', revision, header, body, lau, '</DataPDU>'].join('\n');
+  return ['<?xml version="1.0" encoding="UTF-8"?>', '<DataPDU xmlns="urn:swift:saa:xsd:saa.2.0">', revision, header, body, lau, '</DataPDU>'].join('\n');
 }
 
 function buildPacs009(values) {
-  const parts = buildHeader(values, 'pacs.009.001.01');
+  const parts = buildHeader(values, 'pacs.009.001.09');
   const doc = buildPacsDocument(values, 'Pacs009');
-  return buildDataPDU(parts.headerXml, parts.appHdrXml, doc);
+  return buildDataPDU(parts.headerXml, parts.appHdrXml, doc, '009', parts.bizMsgId);
 }
 
 function buildPacs008(values) {
-  const parts = buildHeader(values, 'pacs.008.001.02');
+  const parts = buildHeader(values, 'pacs.008.001.09');
   const doc = buildPacsDocument(values, 'Pacs008');
-  return buildDataPDU(parts.headerXml, parts.appHdrXml, doc);
+  return buildDataPDU(parts.headerXml, parts.appHdrXml, doc, '008', parts.bizMsgId);
 }
 
 app.get('/health', (req, res) => res.json({ status: 'ok', now: formatSwiftDateTime() }));
 
-app.post('/convert', (req, res) => {
+app.post('/convert', async (req, res) => {
   const body = req.body || {};
   // Allow client to pass either messageFormat or paymentType to select 008/009
   const requested = body.messageFormat || body.paymentType || body.format || '009';
@@ -338,6 +387,65 @@ app.post('/convert', (req, res) => {
   if (errors.length) return res.status(400).json({ errors });
 
   const xml = fmt === '008' ? buildPacs008(body) : buildPacs009(body);
+
+  // Debug: write the generated XML to disk for offline inspection/validation
+  try {
+    const outDir = path.join(__dirname, 'app', 'test-data');
+    if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+    fs.writeFileSync(path.join(outDir, 'last_generated.xml'), xml, { encoding: 'utf8' });
+  } catch (e) {
+    console.warn('Failed to write debug XML file:', e && e.message);
+  }
+
+  // Optional: call external validator API (configurable)
+  const validatorBase = process.env.VALIDATOR_API_URL || 'http://localhost:3001';
+  const xsdMap = { '008': 'pacs.008.001.09.xsd', '009': 'pacs.009.001.09.xsd' };
+  const xsdFile = xsdMap[fmt] || xsdMap['009'];
+
+  try {
+    // attempt to call validator API; extract inner <Document> because pacs XSD
+    // expects <Document> as the root (DataPDU is a wrapper)
+    let documentXml = xml;
+    try {
+      const m = xml.match(/<Document\b[\s\S]*?<\/Document>/i);
+      if (m && m[0]) {
+        documentXml = m[0];
+      } else {
+        console.warn('No <Document> element found when preparing payload for XSD validation; sending full XML');
+      }
+    } catch (ex) {
+      console.warn('Error extracting <Document> for validation:', ex && ex.message);
+    }
+
+    const resp = await fetch(`${validatorBase}/validate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ xml: documentXml, xsd: xsdFile })
+    });
+
+    if (resp.ok) {
+      const j = await resp.json();
+      if (j && j.valid) {
+        res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+        return res.send(xml);
+      }
+      // validator returned not-ok but with 200 and valid:false
+      return res.status(422).json({ validation: j, xml });
+    }
+
+    // If validator returned 422 with details, forward them
+    if (resp.status === 422) {
+      const j = await resp.json().catch(() => null);
+      return res.status(422).json({ validation: j, xml });
+    }
+
+    // other non-OK responses: log and fall back to sending XML
+    console.warn('Validator API returned', resp.status);
+  } catch (err) {
+    console.warn('Validator API call failed:', err.message);
+    // proceed to send XML as fallback
+  }
+
   res.setHeader('Content-Type', 'application/xml; charset=utf-8');
   return res.send(xml);
 });

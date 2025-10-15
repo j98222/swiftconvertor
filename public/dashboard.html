@@ -69,6 +69,17 @@
           <textarea id="remittanceInfo" name="remittanceInfo" rows="4" style="width:100%" placeholder="Remittance Information"></textarea>
         </div>
 
+        <!-- hidden Charge Bearer (visible only for PACS008) -->
+        <div id="chargeBearerRow" style="margin-top:8px;display:none">
+          <label>Charge Bearer</label>
+          <select id="chargeBearer" style="width:200px">
+            <option value="DEBT">DEBT</option>
+            <option value="CRED">CRED</option>
+            <option value="SHAR">SHAR</option>
+            <option value="SLEV">SLEV</option>
+          </select>
+        </div>
+
         <!-- Collapsible zones: collapsed by default -->
         <div class="zones" style="margin-top:14px">
           <style>
@@ -293,9 +304,11 @@
       if(!ok){ location.href = '/'; }
       document.getElementById('logout').addEventListener('click', function(){ sessionStorage.removeItem('swift.loggedIn'); location.href = '/'; });
 
-      // helpers
+  // helpers
       const form = document.getElementById('paymentForm');
       const status = document.getElementById('formStatus');
+  const paymentTypeEl = document.getElementById('paymentType');
+  const chargeBearerRow = document.getElementById('chargeBearerRow');
       const fromBIC = document.getElementById('fromBIC');
       const toBIC = document.getElementById('toBIC');
 
@@ -311,6 +324,14 @@
 
       function setFieldError(el, msg){ if(!el) return; let e = el.nextElementSibling; if(e && e.classList && e.classList.contains('field-error')){ e.textContent = msg||''; e.style.display = msg ? 'block' : 'none'; } else if(msg){ e = document.createElement('div'); e.className='field-error'; e.textContent = msg; el.parentNode.insertBefore(e, el.nextSibling); }
         if(msg) el.classList.add('invalid'); else el.classList.remove('invalid'); }
+
+      // toggle charge bearer visibility based on payment type
+      function updateChargeBearerVisibility(){
+        const is008 = paymentTypeEl.value && paymentTypeEl.value.includes('008');
+        chargeBearerRow.style.display = is008 ? 'block' : 'none';
+      }
+      paymentTypeEl.addEventListener('change', updateChargeBearerVisibility);
+      updateChargeBearerVisibility();
 
       // uppercase BICs as user types
       [fromBIC, toBIC].forEach(el => {
@@ -386,6 +407,7 @@
         const data = {
           paymentType: document.getElementById('paymentType').value.includes('008') ? '008' : '009',
           msgDefIdr: document.getElementById('paymentType').value,
+          chargeBearer: (document.getElementById('chargeBearer')||{value:''}).value || '',
           fromBIC: fromBIC.value.trim(),
           toBIC: toBIC.value.trim(),
           requestType: document.getElementById('settlementMethod').value || '',

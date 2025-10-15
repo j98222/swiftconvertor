@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataPDU xmlns="urn:swift:saa:xsd:saa.2.0">
+<Revision>2.0.14</Revision>
+<Header>
+<SAAHeader>
+  <MessageIdentifier>MSG-20251012-0001</MessageIdentifier>
+</SAAHeader>
+<NetworkInfo>
+  <RequestType>PAYMENT</RequestType>
+</NetworkInfo>
+<Message>
+  <SenderReference>AAAAAAAAXXX$MSG-20251015T183359217Z-b51c</SenderReference>
+  <MessageIdentifier>pacs.009.001.08</MessageIdentifier>
+  <Format>MX</Format>
+  <NetworkInfo>
+    <Service>paymentscanada.lynx</Service>
+    <SWIFTNetNetworkInfo>
+      <RequestType>pacs.009.001.08</RequestType>
+      <RequestSubtype>paymentsca.lynx.00</RequestSubtype>
+    </SWIFTNetNetworkInfo>
+  </NetworkInfo>
+  <Sender>
+    <DN>ou=xxx,o=aaaaaaa9,o=swift</DN>
+    <FullName>
+      <X1>AAAAAAAAXXX</X1>
+    </FullName>
+  </Sender>
+  <Receiver>
+    <DN>ou=xxx,o=aaaaaaa9,o=swift</DN>
+    <FullName>
+      <X1>AAAAAAAAXXX</X1>
+    </FullName>
+  </Receiver>
+  <InterfaceInfo>
+    <UserReference>MSG-20251015T183359217Z-b51c</UserReference>
+  </InterfaceInfo>
+</Message>
+</Header>
+<Body>
+<AppHdr xmlns="urn:iso:std:iso:20022:tech:xsd:head.001.001.01">
+  <MsgDefIdr>pacs.009.001.06</MsgDefIdr>
+  <BizMsgIdr>MSG-20251015T183359217Z-b51c</BizMsgIdr>
+  <CreDt>2025-10-15T18:33:59Z</CreDt>
+  <BizSvc>paymentsca.lynx.03</BizSvc>
+  <Fr><FIId><FINInstnId><BICFI>DEUTDEFF</BICFI></FINInstnId></FIId></Fr>
+  <To><FIId><FINInstnId><BICFI>BOFAUS3N</BICFI></FINInstnId></FIId></To>
+</AppHdr>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.009.001.06">
+    <FICdtTrf>
+        <GrpHdr>
+          <MsgId>MSG-20251015T183359217Z-1769</MsgId>
+          <CreDtTm>2025-10-15T18:33:59Z</CreDtTm>
+          <NbOfTxs>1</NbOfTxs>
+          <SttlmInf>
+            <SttlmMtd>PAYMENT</SttlmMtd>
+            <ClrSys>
+              <Cd>LYX</Cd>
+            </ClrSys>
+          </SttlmInf>
+        </GrpHdr>
+        <CdtTrfTxInf>
+          <PmtTpInf>
+            <LclInstrm>
+              <Prtry>2</Prtry>
+            </LclInstrm>
+          </PmtTpInf>
+          <IntrBkSttlmAmt Ccy="CAD">1000.50</IntrBkSttlmAmt>
+          <IntrBkSttlmDt>2025-10-20</IntrBkSttlmDt>
+          <IntrmyAgt1>
+            <FinInstnId>
+  <BICFI>NEDSZAJJ</BICFI>
+  <Nm>Nedbank Intermediary</Nm>
+  <PstlAdr>
+    <Dept>Intermediary Dept</Dept>
+    <StrtNm>Oak Street</StrtNm>
+    <BldgNb>10</BldgNb>
+    <TwnNm>Johannesburg</TwnNm>
+    <CtrySubDvsn>Sandton</CtrySubDvsn>
+    <PstCd>Gauteng</PstCd>
+    <Ctry>ZA</Ctry>
+  </PstlAdr>
+</FinInstnId>
+          </IntrmyAgt1>
+          <IntrmyAgt1Acct>
+            <Id>
+  <IBAN>NL91ABNA0417164300</IBAN>
+  <Othr>
+    <Id>INT1-ACC-001</Id>
+  </Othr>
+</Id>
+          </IntrmyAgt1Acct>
+          <IntrmyAgt2>
+            <FinInstnId>
+  <BICFI>RBOSGB2L</BICFI>
+  <Nm>RBS Intermediary</Nm>
+  <PstlAdr>
+    <Dept>Intermediary Dept 2</Dept>
+    <StrtNm>Fleet Street</StrtNm>
+    <BldgNb>5</BldgNb>
+    <TwnNm>London</TwnNm>
+    <Ctry>GB</Ctry>
+  </PstlAdr>
+</FinInstnId>
+          </IntrmyAgt2>
+          <IntrmyAgt2Acct>
+            <Id>
+  <IBAN>GB82WEST12345698765432</IBAN>
+  <Othr>
+    <Id>INT2-ACC-001</Id>
+  </Othr>
+</Id>
+          </IntrmyAgt2Acct>
+          <DbtrAgt>
+            <FinInstnId>
+  <BICFI>CHASUS33</BICFI>
+  <Nm>JPM Debtor Agent</Nm>
+  <PstlAdr>
+    <Dept>Payments Ops</Dept>
+    <StrtNm>Broadway</StrtNm>
+    <BldgNb>1</BldgNb>
+    <TwnNm>New York</TwnNm>
+    <PstCd>NY</PstCd>
+    <Ctry>US</Ctry>
+  </PstlAdr>
+</FinInstnId>
+          </DbtrAgt>
+          <DbtrAgtAcct>
+            <Id>
+  <IBAN>FR1420041010050500013M02606</IBAN>
+  <Othr>
+    <Id>DBTRAGT-ACC-01</Id>
+  </Othr>
+</Id>
+          </DbtrAgtAcct>
+          <Dbtr>
+            <FinInstnId>
+              <BICFI>DEUTDEFF</BICFI>
+              <Nm>Bob Corporation</Nm>
+              <PstlAdr>
+                <Dept>Accounts Payable</Dept>
+                <StrtNm>Hauptstrasse</StrtNm>
+                <BldgNb>42</BldgNb>
+                <TwnNm>Frankfurt</TwnNm>
+                <PstCd>Hessen</PstCd>
+                <Ctry>DE</Ctry>
+              </PstlAdr>
+            </FinInstnId>
+          </Dbtr>
+          <DbtrAcct>
+            <Id>
+  <IBAN>DE89370400440532013000</IBAN>
+  <Othr>
+    <Id>DEB-ACC-100</Id>
+  </Othr>
+</Id>
+          </DbtrAcct>
+          <CdtrAgt>
+            <FinInstnId>
+  <BICFI>BNPAFRPP</BICFI>
+  <Nm>BNP Creditor Agent</Nm>
+  <PstlAdr>
+    <Dept>Collections</Dept>
+    <StrtNm>Rue de la Banque</StrtNm>
+    <BldgNb>3</BldgNb>
+    <TwnNm>Paris</TwnNm>
+    <PstCd>Ile-de-France</PstCd>
+    <Ctry>FR</Ctry>
+  </PstlAdr>
+</FinInstnId>
+          </CdtrAgt>
+          <CdtrAgtAcct>
+            <Id>
+  <IBAN>ES9121000418450200051332</IBAN>
+  <Othr>
+    <Id>CDRAGT-ACC-01</Id>
+  </Othr>
+</Id>
+          </CdtrAgtAcct>
+          <Cdtr>
+            <FinInstnId>
+              <BICFI>BOFAUS3N</BICFI>
+              <Nm>Alice Ltd</Nm>
+              <PstlAdr>
+                <Dept>Treasury</Dept>
+                <StrtNm>Market Street</StrtNm>
+                <BldgNb>100</BldgNb>
+                <TwnNm>San Francisco</TwnNm>
+                <PstCd>CA</PstCd>
+                <Ctry>US</Ctry>
+              </PstlAdr>
+            </FinInstnId>
+          </Cdtr>
+          <CdtrAcct>
+            <Id>
+  <IBAN>IE29AIBK93115212345678</IBAN>
+  <Othr>
+    <Id>CRD-ACC-200</Id>
+  </Othr>
+</Id>
+          </CdtrAcct>
+          <RmtInf>
+            <Ustrd>Invoice 2025-12345</Ustrd>
+          </RmtInf>
+        </CdtTrfTxInf>
+      </FICdtTrf>
+</Document>
+</Body>
+<LAU></LAU>
+</DataPDU>
