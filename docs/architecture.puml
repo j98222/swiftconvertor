@@ -1,0 +1,44 @@
+@startuml
+title SwiftConvertor - Architecture
+
+actor User as Browser
+
+package "Frontend" {
+  [Dashboard (static HTML/JS)] as UI
+}
+
+package "Backend" {
+  [Node.js Express Server]\nserver.js as WebServer
+  [DataPDU AppHdr/Document Generator] as Generator
+}
+
+package "Validator" {
+  [Validator REST API]\ntools/validator/api/server.js as ValidatorAPI
+  [xmllint (libxml2)] as Xmllint
+  folder XSDs {
+    file "pacs.009.001.09.xsd" as XSD1
+    file "pacs.008.001.09.xsd" as XSD2
+  }
+}
+
+Browser -> UI : fill form / POST JSON
+UI -> WebServer : POST /convert
+WebServer -> Generator : map JSON -> XML
+Generator -> WebServer : DataPDU + AppHdr + Document
+WebServer -> ValidatorAPI : POST {xml: <Document>, xsd: pacs.009.001.09.xsd}
+ValidatorAPI -> Xmllint : xmllint --schema /xsds/pacs.009.001.09.xsd /tmp/document.xml
+Xmllint --> ValidatorAPI : validation result
+ValidatorAPI --> WebServer : valid/errors
+WebServer --> UI : 200 XML or 422 JSON(with errors + xml)
+
+note right of WebServer
+  - server.js implements mapping, basic validations, and debug file writes
+  - last_generated.xml saved to app/test-data/
+end note
+
+note left of ValidatorAPI
+  - packaged in Dockerfile under tools/validator/api
+  - mounts app/xsds into /xsds
+end note
+
+@enduml
